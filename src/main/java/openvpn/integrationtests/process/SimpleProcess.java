@@ -35,14 +35,9 @@ public class SimpleProcess {
 
 	private void waitForCompletionWithinTimeout() throws InterruptedException {
 		if (!process.waitFor(10L, TimeUnit.SECONDS)) {
-			System.out.println("Timeout of process");
 			process.destroyForcibly();
-			System.out.println("Process ordered to die");
 			process.waitFor();
-			System.out.println("Process dead");
-			String output = outputReader.getOutput();
-			System.out.println("Output: " + output);
-			throw new FailedProcessException("process timed out:\n" + output, builder);
+			throw new FailedProcessException("process timed out:\n" + outputReader.getOutput(), builder);
 		}
 	}
 
@@ -65,9 +60,7 @@ public class SimpleProcess {
 
 		public String getOutput() {
 			try {
-				System.out.println("Waiting for output thread to end...");
 				join();
-				System.out.println("... ended");
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
@@ -77,9 +70,7 @@ public class SimpleProcess {
 		@Override
 		public void run() {
 			try {
-				System.out.println("Starting output thread");
 				output.set(IOUtils.toString(inputStream, Charset.defaultCharset()));
-				System.out.println("Ending output thread");
 			} catch (IOException e) {
 				output.set("<output generation failed due to exception: " + e.toString() + ">");
 			}

@@ -2,6 +2,7 @@ package openvpn.integrationtests.process;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,34 +21,35 @@ public class SimpleProcess {
 		this.outputReader.start();
 	}
 
-	public void waitForSuccess() {
+	public OutputStream standardInput() {
+		return process.getOutputStream();
+	}
+
+	public ProcessOutput waitForSuccess() {
+		waitForCompletionWithinTimeout();
+		if (process.exitValue() != 0) {
+			throw new FailedProcessException(
+					"process failed with exit value " + process.exitValue() + ":\n" + outputReader.getOutput(),
+					builder);
+		}
+		return new ProcessOutput(outputReader.getOutput());
+	}
+
+	private void waitForCompletionWithinTimeout() {
 		try {
-			waitForCompletionWithinTimeout();
-			if (process.exitValue() != 0) {
-				throw new FailedProcessException(
-						"process failed with exit value " + process.exitValue() + ":\n" + outputReader.getOutput(),
-						builder);
+			if (!process.waitFor(10L, TimeUnit.SECONDS)) {
+				process.destroyForcibly();
+				process.waitFor();
+				throw new FailedProcessException("process timed out:\n" + outputReader.getOutput(), builder);
 			}
 		} catch (InterruptedException e) {
 			throw new FailedProcessException(outputReader.getOutput(), builder, e);
 		}
 	}
 
-	private void waitForCompletionWithinTimeout() throws InterruptedException {
-		if (!process.waitFor(10L, TimeUnit.SECONDS)) {
-			process.destroyForcibly();
-			process.waitFor();
-			throw new FailedProcessException("process timed out:\n" + outputReader.getOutput(), builder);
-		}
-	}
-
 	public int waitForResult() {
-		try {
-			waitForCompletionWithinTimeout();
-			return process.exitValue();
-		} catch (InterruptedException e) {
-			throw new FailedProcessException(outputReader.getOutput(), builder, e);
-		}
+		waitForCompletionWithinTimeout();
+		return process.exitValue();
 	}
 
 	private static class ProcessOutputReader extends Thread {
@@ -74,6 +76,18 @@ public class SimpleProcess {
 			} catch (IOException e) {
 				output.set("<output generation failed due to exception: " + e.toString() + ">");
 			}
+		}
+	}
+
+	public void kill() {
+		process.destroy();
+		waitForResult();
+	}
+
+	public void assertAlive() {
+		if (!process.isAlive()) {
+			throw new AssertionError(
+					"Process no longer alive:" + builder.toString() + "\noutput:" + outputReader.getOutput());
 		}
 	}
 }

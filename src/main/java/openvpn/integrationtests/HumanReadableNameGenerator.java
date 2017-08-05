@@ -7,18 +7,15 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 import org.apache.commons.text.RandomStringGenerator;
-import org.kohsuke.randname.RandomNameGenerator;
 
 public class HumanReadableNameGenerator implements NameGenerator {
-	private RandomNameGenerator randomNameGenerator;
 	private RandomStringGenerator randomStringGenerator;
 
 	public HumanReadableNameGenerator() {
-		this(new RandomNameGenerator(), new SecureRandom());
+		this(new SecureRandom());
 	}
 
-	public HumanReadableNameGenerator(RandomNameGenerator randomNameGenerator, Random random) {
-		this.randomNameGenerator = randomNameGenerator;
+	public HumanReadableNameGenerator(Random random) {
 		this.randomStringGenerator = new RandomStringGenerator.Builder() //
 				.usingRandom(random::nextInt) //
 				.withinRange('0', 'z') //

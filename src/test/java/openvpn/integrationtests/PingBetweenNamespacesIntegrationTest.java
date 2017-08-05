@@ -6,14 +6,14 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import openvpn.integrationtests.linux.LinuxSudoEnviroment;
+import openvpn.integrationtests.linux.LinuxRemoteEnviroment;
 
 public class PingBetweenNamespacesIntegrationTest {
 
 	@Test
 	public void testPingBetweenNamespaces() {
 		NameGenerator nameGenerator = new HumanReadableNameGenerator();
-		Enviroment environment = new LinuxSudoEnviroment(nameGenerator, "root@docker-vm");
+		Enviroment environment = new LinuxRemoteEnviroment(nameGenerator, "root@docker-vm", "/usr/sbin/openvpn");
 		NetworkNamespaceFactory networkNamespaceFactory = environment.createNetworkNamespaceFactory();
 		VirtualEthernetDevicePairFactory virtualEthernetDevicePairFactory = environment
 				.createVirtualEthernetDevicePairFactory();

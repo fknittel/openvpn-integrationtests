@@ -18,8 +18,8 @@ public class PingBetweenOpenvpnTunEndpointsIntegrationTest {
 
 	@Before
 	public void setupEnvironment() {
-		nameGenerator = new HumanReadableNameGenerator();
-		environment = new LinuxRemoteEnviroment(nameGenerator, "root@docker-vm", "/usr/sbin/openvpn");
+		nameGenerator = new RandomNameGenerator();
+		environment = new LinuxRemoteEnviroment(nameGenerator, "root@docker-vm");
 		networkNamespaceFactory = environment.createNetworkNamespaceFactory();
 		virtualEthernetDevicePairFactory = environment
 				.createVirtualEthernetDevicePairFactory();
@@ -28,7 +28,8 @@ public class PingBetweenOpenvpnTunEndpointsIntegrationTest {
 
 	@Test
 	public void testPingBetweenNamespaces() {
-		try (OpenvpnKey staticKey = environment.createOpenvpnKeyBuilder().build();
+		OpenvpnFactory openvpnFactory = environment.createOpenvpnFactory("/usr/sbin/openvpn");
+		try (OpenvpnKey staticKey = openvpnFactory.createOpenvpnKeyBuilder().build();
 				NetworkNamespace namespaceServer = networkNamespaceFactory.create();
 				NetworkNamespace namespaceClient = networkNamespaceFactory.create()) {
 			VirtualEthernetDevicePair virtualEthernetDevicePair = virtualEthernetDevicePairFactory.create();
@@ -48,7 +49,7 @@ public class PingBetweenOpenvpnTunEndpointsIntegrationTest {
 			IpAddress tunnelIpAddressClient = new IpAddress("10.8.0.2");
 
 			IfConfig serverIfconfig = new IfConfig(tunnelIpAddressServer, tunnelIpAddressClient);
-			try (OpenvpnProcess openvpnServer = environment.createOpenvpnBuilder(namespaceServer)
+			try (OpenvpnProcess openvpnServer = openvpnFactory.createOpenvpnBuilder(namespaceServer)
 					.withConfig(new OpenvpnConfiguration.Builder()
 							.withDev(OpenvpnDevice.TUN)
 							.withIfconfig(serverIfconfig)
@@ -57,7 +58,7 @@ public class PingBetweenOpenvpnTunEndpointsIntegrationTest {
 					.build()) {
 				openvpnServer.run();
 
-				try (OpenvpnProcess openvpnClient = environment.createOpenvpnBuilder(namespaceClient)
+				try (OpenvpnProcess openvpnClient = openvpnFactory.createOpenvpnBuilder(namespaceClient)
 						.withConfig(new OpenvpnConfiguration.Builder()
 								.withRemote(new Remote(ipAddressServer))
 								.withDev(OpenvpnDevice.TUN)

@@ -12,8 +12,8 @@ public class PingBetweenNamespacesIntegrationTest {
 
 	@Test
 	public void testPingBetweenNamespaces() {
-		NameGenerator nameGenerator = new HumanReadableNameGenerator();
-		Enviroment environment = new LinuxRemoteEnviroment(nameGenerator, "root@docker-vm", "/usr/sbin/openvpn");
+		NameGenerator nameGenerator = new RandomNameGenerator();
+		Enviroment environment = new LinuxRemoteEnviroment(nameGenerator, "root@docker-vm");
 		NetworkNamespaceFactory networkNamespaceFactory = environment.createNetworkNamespaceFactory();
 		VirtualEthernetDevicePairFactory virtualEthernetDevicePairFactory = environment
 				.createVirtualEthernetDevicePairFactory();
@@ -23,12 +23,12 @@ public class PingBetweenNamespacesIntegrationTest {
 				NetworkNamespace namespace2 = networkNamespaceFactory.create()) {
 			VirtualEthernetDevicePair virtualEthernetDevicePair = virtualEthernetDevicePairFactory.create();
 
-			VirtualEthernetDevice deviceNs1 = virtualEthernetDevicePair.getLeftDevice() //
+			virtualEthernetDevicePair.getLeftDevice() //
 					.moveTo(namespace1) //
 					.up() //
 					.addAddress(new IpNetwork("10.0.0.1/24"));
 
-			VirtualEthernetDevice deviceNs2 = virtualEthernetDevicePair.getRightDevice() //
+			virtualEthernetDevicePair.getRightDevice() //
 					.moveTo(namespace2) //
 					.up() //
 					.addAddress(new IpNetwork("10.0.0.2/24"));

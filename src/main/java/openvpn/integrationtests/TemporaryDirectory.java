@@ -1,4 +1,4 @@
-package openvpn.integrationtests.linux;
+package openvpn.integrationtests;
 
 import java.nio.file.Path;
 

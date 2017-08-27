@@ -6,6 +6,8 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import openvpn.integrationtests.TemporaryDirectory;
+import openvpn.integrationtests.TemporaryDirectoryFactory;
 import openvpn.integrationtests.process.SimpleProcess;
 import openvpn.integrationtests.process.SimpleProcessBuilder;
 

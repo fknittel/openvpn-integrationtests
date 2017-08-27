@@ -8,14 +8,14 @@ import java.util.Random;
 
 import org.apache.commons.text.RandomStringGenerator;
 
-public class HumanReadableNameGenerator implements NameGenerator {
+public class RandomNameGenerator implements NameGenerator {
 	private RandomStringGenerator randomStringGenerator;
 
-	public HumanReadableNameGenerator() {
+	public RandomNameGenerator() {
 		this(new SecureRandom());
 	}
 
-	public HumanReadableNameGenerator(Random random) {
+	public RandomNameGenerator(Random random) {
 		this.randomStringGenerator = new RandomStringGenerator.Builder() //
 				.usingRandom(random::nextInt) //
 				.withinRange('0', 'z') //

@@ -2,9 +2,6 @@ package openvpn.integrationtests;
 
 import java.nio.file.Path;
 
-import openvpn.integrationtests.linux.TemporaryDirectory;
-import openvpn.integrationtests.linux.TemporaryDirectoryFactory;
-
 public class OpenvpnProcessBuilder {
 	private String pathToExecutable;
 	private OpenvpnConfiguration configuration;

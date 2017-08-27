@@ -2,7 +2,6 @@ package openvpn.integrationtests;
 
 import java.nio.file.Path;
 
-import openvpn.integrationtests.linux.TemporaryDirectory;
 import openvpn.integrationtests.process.SimpleProcess;
 
 public class OpenvpnProcess implements AutoCloseable {
